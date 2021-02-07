@@ -2,11 +2,15 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\Post;
+use App\Form\TagType;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use EasyCorp\Bundle\EasyAdminBundle\Router\CrudUrlGenerator;
 
 class DashboardController extends AbstractDashboardController
 {
@@ -15,18 +19,29 @@ class DashboardController extends AbstractDashboardController
      */
     public function index(): Response
     {
-        return parent::index();
+        // redirect to some CRUD controller
+        $routeBuilder = $this->get(CrudUrlGenerator::class)->build();
+
+        // return $this->redirect($routeBuilder->setController(MenuCrudController::class)->generateUrl());
+        return $this->redirect($routeBuilder->setController(PostCrudController::class)->generateUrl());
+
     }
 
     public function configureDashboard(): Dashboard
     {
         return Dashboard::new()
-            ->setTitle('Sym Api');
+            // the name visible to end users
+            ->setTitle('D R U M M E R');
     }
 
     public function configureMenuItems(): iterable
     {
-        yield MenuItem::linktoDashboard('Dashboard', 'fa fa-home');
-        // yield MenuItem::linkToCrud('The Label', 'fas fa-list', EntityClass::class);
+        return [
+            MenuItem::linkToDashboard('Dashboard', 'fa fa-home'),
+
+            MenuItem::section('Blog'),
+            yield MenuItem::linkToCrud('Post', 'fa fa-tags', Post::class),
+        ];
     }
+
 }
